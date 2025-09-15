@@ -1,4 +1,16 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function Home() {
+   
+  const router = useRouter();
+  
+  const handleConvertClick = () => {
+    
+
+    router.push('/submit');
+  };
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
@@ -24,7 +36,9 @@ export default function Home() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <button className="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+          <button 
+           onClick={handleConvertClick}
+          className="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
             Convert Your Syllabus Now
           </button>
           <button className="border border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-black transition-colors">
