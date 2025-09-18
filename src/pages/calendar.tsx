@@ -9,6 +9,9 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useSearchParams } from "next/navigation";
+import { downloadICS } from "../utils/downloadICS";
+import { openGoogleCalendarImport } from "../utils/downloadGmail";
+import { openOutlookCalendar } from "../utils/downloadOutlook";
 
 // Import your local JSON data
 import calendarData from "./calendar-data.json";
@@ -220,6 +223,35 @@ export default function CalendarPage() {
               </div>
             ))}
           </div>
+                    <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-lg font-bold mb-4 text-center">Export Calendar</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              {/* Google Calendar Button */}
+              <button className="flex flex-col items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors" onClick={() => { openGoogleCalendarImport(calendarData)}}>
+                <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 12h-10v10h10v-10zm10 0h-10v10h10v-10zm-10-12h-10v10h10v-10zm10 0h-10v10h10v-10z"/>
+                </svg>
+                <span>Google Calendar</span>
+              </button>
+
+              {/* Outlook Button */}
+              <button className="flex flex-col items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" onClick={() => { openOutlookCalendar(calendarData)}}>
+                <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 12h-10v10h10v-10zm10 0h-10v10h10v-10zm-10-12h-10v10h10v-10zm10 0h-10v10h10v-10z"/>
+                  <path d="M14.5 12h-5v5h5v-5z" fill="white"/>
+                </svg>
+                <span>Outlook</span>
+              </button>
+
+              {/* ICS Download Button */}
+              <button className="flex flex-col items-center bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors" onClick={() => { downloadICS(calendarData)}}>
+                <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Download ICS</span>
+              </button>
+            </div>
+            </div>
         </div>
       </div>
 

@@ -11,9 +11,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { fileBuffer } = req.body;
+    const { fileBuffer, originalName } = req.body;
     if (!fileBuffer) {
       return res.status(400).json({ error: "No file provided" });
+    }
+
+    // ✅ Always provide a safe filename with extension
+    let filename = "upload.pdf";
+    if (originalName && typeof originalName === "string" && originalName.includes(".")) {
+      filename = originalName;
     }
 
     // Create a job
@@ -23,6 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         "convert-file": {
           operation: "convert",
           input: "import-file",
+          input_format: "pdf",
           output_format: "docx",
         },
         "export-file": {
@@ -38,15 +45,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: "Import task not found" });
     }
 
-    // Upload file buffer to CloudConvert
-    await cloudConvert.tasks.upload(importTask, Buffer.from(fileBuffer, "base64"));
+    // Upload file buffer with proper filename
+    await cloudConvert.tasks.upload(importTask, Buffer.from(fileBuffer, "base64"), filename);
 
     // Wait for job completion
     const finishedJob = await cloudConvert.jobs.wait(job.id);
 
     // Find the export task
     const exportTask = finishedJob.tasks.find((t: any) => t.operation === "export/url");
-    if (!exportTask || !exportTask.result || !exportTask.result.files || exportTask.result.files.length === 0) {
+    if (
+      !exportTask ||
+      !exportTask.result ||
+      !exportTask.result.files ||
+      exportTask.result.files.length === 0
+    ) {
       return res.status(500).json({ error: "Export task failed" });
     }
 

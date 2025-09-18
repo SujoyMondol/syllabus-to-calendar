@@ -1,67 +1,89 @@
 {
-  "courseCode": "LCRSII",
+  "courseCode": "Legal102",
   "courseName": "Legal Communication and Research Skills II",
   "eventTypes": [
     "class",
+    "meeting",
     "assignment",
     "conference"
   ],
   "events": [
     {
-      "title": "Classes Begin",
+      "title": "Class",
       "date": "2025-01-17",
-      "time": "09:00",
-      "description": "Start of Legal Communication and Research Skills II classes",
+      "time": "9:00-10:50",
+      "description": "Reading: The Handbook for the New Legal Writer: Chapters 25-28, pages 181-206; Sample Motions, pages 245-76",
       "type": "class"
     },
     {
-      "title": "Partial Motion or Opposition Due",
+      "title": "Class",
       "date": "2025-01-24",
       "time": null,
-      "description": "Deadline to submit Partial Motion or Opposition assignment",
-      "type": "assignment"
-    },
-    {
-      "title": "Complete Motion or Opposition Due",
-      "date": "2025-02-14",
-      "time": null,
-      "description": "Deadline to submit Complete Motion or Opposition assignment",
-      "type": "assignment"
+      "description": "Read: Syllabus and Assignment Schedule\nRead: Handbook: Chapters 29-32, pages 207-44\nOptional Listening: Podcasts 1, 2, and 3 at jillbarton.net. The password is Kagan!",
+      "type": "class"
     },
     {
       "title": "Individual Conferences",
-      "date": "2025-02-18",
-      "time": "12:30",
-      "description": "Conferences held on Zoom instead of class",
-      "type": "conference"
+      "date": "2025-01-31",
+      "time": null,
+      "description": "Writing Assignment Due: Partial Motion or Opposition—submit document on TWEN at least 24 hours before your conference",
+      "type": "meeting"
     },
     {
-      "title": "Final Assignment Discussion",
-      "date": "2025-02-24",
-      "time": "11:10",
-      "description": "Meeting to discuss the final assignment",
+      "title": "Class",
+      "date": "2025-02-07",
+      "time": null,
+      "description": "Read: Handbook: Chapter 39, pages 347-61\nRead: Understanding and Mastering the Bluebook: Chapter 8 (posted on Blackboard)\nRead: Supplement on trial court oral arguments (posted on Blackboard)\nOptional Listening: Podcasts 4, 5, and 6",
       "type": "class"
     },
     {
-      "title": "Research Report Due",
-      "date": "2025-03-07",
+      "title": "Writing Assignment Due",
+      "date": "2025-02-14",
       "time": null,
-      "description": "Deadline to submit Research Report assignment",
+      "description": "Complete Motion or Opposition\nComplete: Oral arguments (in class)",
       "type": "assignment"
     },
     {
-      "title": "Final Appellate Brief Due",
+      "title": "Class Discussion",
+      "date": "2025-02-18",
+      "time": "12:30-1:50",
+      "description": "Meeting over lunch to discuss the final assignment instead of usual class time",
+      "type": "class"
+    },
+    {
+      "title": "Class",
+      "date": "2025-02-24",
+      "time": "11:10-12:30",
+      "description": "Read: Handbook: Chapter 33, pages 277-99; Chapters 40-44, pages 365-402\nOptional Listening: Podcasts 7, 8, and 9\nPrepare to discuss the final assignment materials and your writing plan for the final appellate brief",
+      "type": "class"
+    },
+    {
+      "title": "Writing Assignment Due",
+      "date": "2025-03-07",
+      "time": null,
+      "description": "Prepare to discuss your research for the final appellate brief\nWriting Assignment Due: Research Report",
+      "type": "assignment"
+    },
+    {
+      "title": "Final Class",
+      "date": "2025-03-28",
+      "time": null,
+      "description": "Final class of the semester",
+      "type": "class"
+    },
+    {
+      "title": "Appellate Brief Due",
       "date": "2025-03-31",
       "time": "20:00",
-      "description": "Deadline to submit Final Appellate Brief assignment",
+      "description": "Appellate Brief Due on TWEN by 8:00 p.m.",
       "type": "assignment"
     },
     {
       "title": "Oral Arguments",
       "date": "2025-04-03",
       "time": null,
-      "description": "Available dates for Oral Arguments",
-      "type": "class"
+      "description": "Oral arguments to be held on April 3-4, specific date, time, and location to be announced later",
+      "type": "conference"
     }
   ]
 }

@@ -37,8 +37,8 @@ export default function SubmitPage() {
     // router.push('/calendar');
     // const encoded = encodeURIComponent(JSON.stringify(calendarData));
     // router.push(`/calendar?data=${encoded}`);
-  const encoded = encodeURIComponent(JSON.stringify(calendarData));
-  router.push(`/calendar?data=${encoded}`);
+  
+  router.push(`/calendar`);
 
     
     
