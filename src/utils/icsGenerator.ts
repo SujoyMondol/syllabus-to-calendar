@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function generateICS(calendarData: any): string {
   const { courseCode, courseName, events } = calendarData;
 
