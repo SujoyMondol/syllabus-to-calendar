@@ -1,0 +1,67 @@
+{
+  "courseCode": "LCRSII",
+  "courseName": "Legal Communication and Research Skills II",
+  "eventTypes": [
+    "class",
+    "assignment",
+    "conference"
+  ],
+  "events": [
+    {
+      "title": "Classes Begin",
+      "date": "2025-01-17",
+      "time": "09:00",
+      "description": "Start of Legal Communication and Research Skills II classes",
+      "type": "class"
+    },
+    {
+      "title": "Partial Motion or Opposition Due",
+      "date": "2025-01-24",
+      "time": null,
+      "description": "Deadline to submit Partial Motion or Opposition assignment",
+      "type": "assignment"
+    },
+    {
+      "title": "Complete Motion or Opposition Due",
+      "date": "2025-02-14",
+      "time": null,
+      "description": "Deadline to submit Complete Motion or Opposition assignment",
+      "type": "assignment"
+    },
+    {
+      "title": "Individual Conferences",
+      "date": "2025-02-18",
+      "time": "12:30",
+      "description": "Conferences held on Zoom instead of class",
+      "type": "conference"
+    },
+    {
+      "title": "Final Assignment Discussion",
+      "date": "2025-02-24",
+      "time": "11:10",
+      "description": "Meeting to discuss the final assignment",
+      "type": "class"
+    },
+    {
+      "title": "Research Report Due",
+      "date": "2025-03-07",
+      "time": null,
+      "description": "Deadline to submit Research Report assignment",
+      "type": "assignment"
+    },
+    {
+      "title": "Final Appellate Brief Due",
+      "date": "2025-03-31",
+      "time": "20:00",
+      "description": "Deadline to submit Final Appellate Brief assignment",
+      "type": "assignment"
+    },
+    {
+      "title": "Oral Arguments",
+      "date": "2025-04-03",
+      "time": null,
+      "description": "Available dates for Oral Arguments",
+      "type": "class"
+    }
+  ]
+}

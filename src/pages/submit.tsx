@@ -3,16 +3,143 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import dynamic from "next/dynamic";
 import '../app/globals.css';
+import { PDFDocumentProxy, TextItem } from "pdfjs-dist/types/src/display/api";
+import axios from "axios";
+import { useRouter } from 'next/navigation';
+
+
+const loadPdfjs = async () => {
+  const pdfjsLib = await import("pdfjs-dist/build/pdf.mjs");
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - TS doesn’t understand worker export
+  const workerSrc = await import("pdfjs-dist/build/pdf.worker.mjs");
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(
+    new Blob([workerSrc.default], { type: "application/javascript" })
+  );
+
+  return pdfjsLib;
+};
 
 export default function SubmitPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [extractedText, setExtractedText] = useState<string>('');
+  const [calendarData, setCalendarData] = useState<any>(null);
+
+  const router = useRouter();
+
+  const redirectToCalendar = (calendarData : any) => {
+    // localStorage.setItem("calendarData", JSON.stringify(calendarData));
+    // router.push('/calendar');
+    // const encoded = encodeURIComponent(JSON.stringify(calendarData));
+    // router.push(`/calendar?data=${encoded}`);
+  const encoded = encodeURIComponent(JSON.stringify(calendarData));
+  router.push(`/calendar?data=${encoded}`);
+
+    
+    
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
+    }
+  };
+
+  const convertPdfToDocx = async (file: File): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const base64 = Buffer.from(e.target?.result as ArrayBuffer).toString("base64");
+
+        // Call API route
+        const response = await fetch("/api/convert", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileBuffer: base64 }),
+        });
+
+        if (!response.ok) throw new Error("Server error during conversion");
+
+        const { url } = await response.json();
+
+        // Download converted DOCX file
+        const docxResponse = await fetch(url);
+        const arrayBuffer = await docxResponse.arrayBuffer();
+
+        resolve(arrayBuffer);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    reader.onerror = (err) => reject(err);
+    reader.readAsArrayBuffer(file);
+  });
+};
+
+  const extractTextFromFile = async (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    if (file.type === "application/pdf") {
+      // PDF → convert to DOCX first
+      convertPdfToDocx(file)
+        .then(async (arrayBuffer) => {
+          const mammoth = await import("mammoth");
+          const result = await mammoth.extractRawText({ arrayBuffer });
+          resolve(result.value.trim());
+        })
+        .catch(reject);
+    } else if (
+      file.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      // DOCX → extract directly
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const mammoth = await import("mammoth");
+          const result = await mammoth.extractRawText({
+            arrayBuffer: e.target?.result as ArrayBuffer,
+          });
+          resolve(result.value.trim());
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    } else {
+      reject(new Error("Unsupported file type"));
+    }
+  });
+};
+
+  const sendToOpenAI = async (text: string) => {
+    try {
+      // Replace with your actual OpenAI API call
+      const response = await fetch('/api/process-syllabus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to process with OpenAI');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error sending to OpenAI:', error);
+      throw error;
     }
   };
 
@@ -22,15 +149,19 @@ export default function SubmitPage() {
     
     setIsProcessing(true);
     
-    // Simulate file upload and processing
     try {
-      // In a real app, you would upload the file to your server here
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Extract text from file
+      const text = await extractTextFromFile(file);
+      setExtractedText(text);
       
-      // Randomly determine success for demonstration
-      const isSuccess = Math.random() > 0.3;
-      setUploadStatus(isSuccess ? 'success' : 'error');
+      // Send to OpenAI API
+      const result = await sendToOpenAI(text);
+      setCalendarData(result);
+      
+      
+      setUploadStatus('success');
     } catch (error) {
+      console.error('Error processing file:', error);
       setUploadStatus('error');
     } finally {
       setIsProcessing(false);
@@ -111,12 +242,21 @@ export default function SubmitPage() {
             </form>
             
             {/* Status Messages */}
-            {uploadStatus === 'success' && (
+            {uploadStatus === 'success' && calendarData && (
+              
               <div className="mt-6 p-4 bg-green-100 text-green-700 rounded-lg">
                 <p className="font-semibold">Success!</p>
-                <p>Your syllabus has been processed successfully. You can now download your calendar.</p>
-                <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                  Download Calendar
+                <p>Your syllabus has been processed successfully.</p>
+                {/* {calendarData && (
+                  <div className="mt-4 text-left">
+                    <h4 className="font-semibold">Extracted Calendar Events:</h4>
+                    <pre className="text-xs overflow-auto max-h-40 mt-2 p-2 bg-green-200 rounded">
+                      {JSON.stringify(calendarData, null, 2)}
+                    </pre>
+                  </div>
+                )} */}
+                <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors" onClick={redirectToCalendar}>
+                  Go To Calendar
                 </button>
               </div>
             )}
@@ -153,7 +293,7 @@ export default function SubmitPage() {
                 <span className="text-red-600 mr-2">✓</span> Multiple Calendar Formats
               </h3>
               <p className="text-gray-300">
-                Export to Google Calendar, Outlook, Apple Calendar, or download as ICS file.
+                Export to Google Calendar, Outlook Calendar, or download as ICS file.
               </p>
             </div>
           </div>

@@ -106,7 +106,7 @@ export default function Home() {
                 </svg>
               </div>
               <h4 className="font-bold text-lg mb-2">Multiple Calendar Formats</h4>
-              <p className="text-gray-600">Export to Google Calendar, Outlook, Apple Calendar, or download as ICS file.</p>
+              <p className="text-gray-600">Export to Google Calendar, Outlook Calendar, or download as ICS file.</p>
             </div>
 
             <div className="p-6 rounded-lg border border-gray-200">
