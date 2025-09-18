@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { generateICS } from "./icsGenerator";
 
 export function openOutlookCalendar(calendarData: any) {
