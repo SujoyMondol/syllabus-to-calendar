@@ -3,25 +3,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import dynamic from "next/dynamic";
+
 import '../app/globals.css';
-import { PDFDocumentProxy, TextItem } from "pdfjs-dist/types/src/display/api";
-import axios from "axios";
 import { useRouter } from 'next/navigation';
 
 
-const loadPdfjs = async () => {
-  const pdfjsLib = await import("pdfjs-dist/build/pdf.mjs");
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore - TS doesn’t understand worker export
-  const workerSrc = await import("pdfjs-dist/build/pdf.worker.mjs");
-
-  pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(
-    new Blob([workerSrc.default], { type: "application/javascript" })
-  );
-
-  return pdfjsLib;
-};
 
 export default function SubmitPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -33,10 +19,7 @@ export default function SubmitPage() {
   const router = useRouter();
 
   const redirectToCalendar = (calendarData : any) => {
-    // localStorage.setItem("calendarData", JSON.stringify(calendarData));
-    // router.push('/calendar');
-    // const encoded = encodeURIComponent(JSON.stringify(calendarData));
-    // router.push(`/calendar?data=${encoded}`);
+
   
   router.push(`/calendar`);
 

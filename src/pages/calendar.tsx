@@ -11,7 +11,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useSearchParams } from "next/navigation";
 import { downloadICS } from "../utils/downloadICS";
 import { openGoogleCalendarImport } from "../utils/downloadGmail";
-import { openOutlookCalendar } from "../utils/downloadOutlook";
+
 
 // Import your local JSON data
 import calendarData from "./calendar-data.json";
@@ -234,14 +234,7 @@ export default function CalendarPage() {
                 <span>Google Calendar</span>
               </button>
 
-              {/* Outlook Button */}
-              <button className="flex flex-col items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors" onClick={() => { openOutlookCalendar(calendarData)}}>
-                <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 12h-10v10h10v-10zm10 0h-10v10h10v-10zm-10-12h-10v10h10v-10zm10 0h-10v10h10v-10z"/>
-                  <path d="M14.5 12h-5v5h5v-5z" fill="white"/>
-                </svg>
-                <span>Outlook</span>
-              </button>
+
 
               {/* ICS Download Button */}
               <button className="flex flex-col items-center bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition-colors" onClick={() => { downloadICS(calendarData)}}>

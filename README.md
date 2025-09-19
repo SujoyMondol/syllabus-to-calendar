@@ -28,7 +28,7 @@ A modern web application that transforms course syllabi into organized calendar 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/syllabus-to-calendar.git
+   git clone https://github.com/SujoyMondol/syllabus-to-calendar.git
    cd syllabus-to-calendar
    ```
 
@@ -47,7 +47,7 @@ A modern web application that transforms course syllabi into organized calendar 
    # CloudConvert API Key (for PDF to DOCX conversion)
    CLOUDCONVERT_API_KEY=your_cloudconvert_api_key_here
 
-   # OpenAI API Key (optional, for advanced text processing)
+   # OpenAI API Key (for event information extraction)
    OPENAI_API_KEY=your_openai_api_key_here
 
    # Add any other API keys or environment variables you need
@@ -70,21 +70,18 @@ A modern web application that transforms course syllabi into organized calendar 
 ```
 src/
 ├── app/
-│   ├── calendar/
-│   │   ├── page.tsx          # Calendar view page
-│   │   └── calendar-data.json # Sample calendar data
-│   ├── features/
-│   │   └── page.tsx          # Features showcase page
-│   ├── how-it-works/
-│   │   └── page.tsx          # How it works page
-│   ├── submit/
-│   │   └── page.tsx          # Syllabus upload page
-│   ├── globals.css           # Global styles
-│   ├── layout.tsx            # Root layout
-│   └── page.tsx              # Home page
+│   ├── pages/
+│   │   ├── calendar.tsx          # Calendar view page
+|   |   |── featrues.tsx          # Features page
+|   |   |── howItWorks.tsx        # How it works page
+|   |   |── submit.tsx            # Syllabus submission page
+│   │   └── calendar-data.json    # JSON output from OpenAI
+│   ├── globals.css               # Global styles
+│   ├── layout.tsx                # Root layout
+│   └── page.tsx                  # Home page
 ├── types/
-│   └── json.d.ts             # TypeScript JSON declarations
-└── public/                   # Static assets
+│   └── json.d.ts                 # TypeScript JSON declarations
+└── public/                       # Static assets
 ```
 
 ## 🎨 Design System
@@ -103,7 +100,7 @@ The application uses a consistent black and white color scheme with red accents:
 - **Styling**: Tailwind CSS
 - **Calendar**: React Big Calendar with date-fns
 - **File Processing**: PDF.js, Mammoth.js (for DOCX)
-- **API Integration**: CloudConvert API for PDF conversion
+- **API Integration**: CloudConvert API for PDF conversion, OpenAI API for event extraction
 - **Icons**: Custom SVG icons
 
 ## 📋 API Integration
@@ -115,8 +112,8 @@ The application uses CloudConvert API to convert PDF files to DOCX format for te
 2. Obtain your API key from the dashboard
 3. Add it to your environment variables
 
-### Optional: OpenAI API
-For advanced text processing and date extraction, you can integrate OpenAI's API:
+###  OpenAI API
+For advanced text processing and date extraction, we have integrated OpenAI's API:
 
 1. Sign up for an OpenAI account
 2. Obtain your API key
@@ -124,20 +121,7 @@ For advanced text processing and date extraction, you can integrate OpenAI's API
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new) from the creators of Next.js.
 
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add your environment variables in Vercel dashboard
-4. Deploy!
-
-### Other Platforms
-You can also deploy to other platforms like:
-
-- **Netlify**: `npm run build && npm run export`
-- **AWS Amplify**: Configure build settings for Next.js
-- **Railway**: One-click deployment with railway.app
 
 ## 📝 Usage
 
@@ -146,19 +130,11 @@ You can also deploy to other platforms like:
 3. **Review**: Check the extracted events and make any necessary adjustments
 4. **Export**: Choose your preferred calendar format and export your schedule
 
-## 🤝 Contributing
 
-We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License 
 
 ## 🆘 Support
 
