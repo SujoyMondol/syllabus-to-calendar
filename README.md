@@ -71,16 +71,22 @@ A modern web application that transforms course syllabi into organized calendar 
 src/
 ├── app/
 │   ├── pages/
-│   │   ├── calendar.tsx          # Calendar view page
-|   |   |── featrues.tsx          # Features page
-|   |   |── howItWorks.tsx        # How it works page
-|   |   |── submit.tsx            # Syllabus submission page
-│   │   └── calendar-data.json    # JSON output from OpenAI
-│   ├── globals.css               # Global styles
-│   ├── layout.tsx                # Root layout
-│   └── page.tsx                  # Home page
-├── types/
-│   └── json.d.ts                 # TypeScript JSON declarations
+|   |   ├── api/
+|   |   |    ├──  convert.ts                # Convert PDF file to DOCX for better event extraction
+|   |   |    └──   process-syllabus.ts      # Process text using OpenAI API to extract events
+│   │   ├── calendar.tsx                    # Calendar view page
+|   |   |── featrues.tsx                    # Features page
+|   |   |── howItWorks.tsx                  # How it works page
+|   |   |── submit.tsx                      # Syllabus submission page
+│   │   └── calendar-data.json              # JSON output from OpenAI
+|   |── utils/
+|   |   |── icsGenerator.ts                 # Generate the ics file
+|   |   |── downloadICS.ts                  # downloads the generated ics 
+|   |   |__ downloadGmail.ts                # downloads the ics file and opens google calendar
+│   ├── globals.css                         # Global styles
+│   ├── layout.tsx                          # Root layout
+│   └── page.tsx                            # Home page
+|
 └── public/                       # Static assets
 ```
 
