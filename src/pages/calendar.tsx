@@ -79,6 +79,7 @@ export default function CalendarPage() {
       case 'quiz': return '#CA8A04';
       case 'class': return '#16A34A';
       case 'conference': return '#9333EA';
+      case 'meeting': return '#8B5CF6'; // Added for meeting type
       default: return '#6B7280';
     }
   };
@@ -89,6 +90,7 @@ export default function CalendarPage() {
   };
 
   const handleSaveEvent = (updatedEvent: Event) => {
+    // Update the events state
     const updatedEvents = events.map(ev => 
       ev.title === editingEvent?.title && ev.date === editingEvent?.date 
         ? { ...updatedEvent, start: new Date(`${updatedEvent.date}T${updatedEvent.time || "00:00"}`), end: new Date(`${updatedEvent.date}T${updatedEvent.time || "23:59"}`) }
@@ -97,7 +99,7 @@ export default function CalendarPage() {
     
     setEvents(updatedEvents);
     
-    // Update the specific course events as well
+    // Update the courses state
     const updatedCourses = courses.map(course => ({
       ...course,
       events: course.events.map(ev => 
@@ -108,18 +110,33 @@ export default function CalendarPage() {
     }));
     
     setCourses(updatedCourses);
+
+    // Update the calendarData object (simulating persistence)
+    calendarData.events = calendarData.events.map(ev => 
+      ev.title === editingEvent?.title && ev.date === editingEvent?.date 
+        ? { ...updatedEvent } // Remove start/end as they are not in JSON
+        : ev
+    );
+
+    // If adding a new event (no editingEvent match), append to calendarData.events
+    if (!calendarData.events.some(ev => ev.title === editingEvent?.title && ev.date === editingEvent?.date)) {
+      calendarData.events.push({ ...updatedEvent });
+    }
+    
     setIsEditModalOpen(false);
     setEditingEvent(null);
   };
 
   const handleDeleteEvent = (eventToDelete: Event) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
+      // Update the events state
       const updatedEvents = events.filter(ev => 
         !(ev.title === eventToDelete.title && ev.date === eventToDelete.date)
       );
       
       setEvents(updatedEvents);
       
+      // Update the courses state
       const updatedCourses = courses.map(course => ({
         ...course,
         events: course.events.filter(ev => 
@@ -128,6 +145,11 @@ export default function CalendarPage() {
       }));
       
       setCourses(updatedCourses);
+
+      // Update the calendarData object (simulating persistence)
+      calendarData.events = calendarData.events.filter(ev => 
+        !(ev.title === eventToDelete.title && ev.date === eventToDelete.date)
+      );
     }
   };
 
@@ -176,7 +198,6 @@ export default function CalendarPage() {
           <div className="bg-white text-black rounded-lg p-6 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Courses</h2>
-              
             </div>
             <div className="space-y-3">
               {courses.map((course) => (
@@ -195,16 +216,15 @@ export default function CalendarPage() {
                     )
                   }
                 >
-                  
                   <h3 className="font-bold">{course.courseCode}</h3>
                   <p className="text-sm">{course.courseName}</p>
                   <div className="flex flex-wrap gap-1 mt-2">
                     <button
-                onClick={handleAddEvent}
-                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
-              >
-                + Add Event
-              </button>
+                      onClick={handleAddEvent}
+                      className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
+                    >
+                      + Add Event
+                    </button>
                     {course.eventTypes.map((type: string) => (
                       <span
                         key={type}
@@ -278,7 +298,23 @@ export default function CalendarPage() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg">{event.title}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-lg">{event.title}</h3>
+                      <div className="hidden group-hover:flex gap-2">
+                        <button
+                          onClick={() => handleEditEvent(event)}
+                          className="bg-blue-600 text-white p-1 rounded text-xs hover:bg-blue-700"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteEvent(event)}
+                          className="bg-red-600 text-white p-1 rounded text-xs hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                     <p className="text-gray-600">{event.description}</p>
                   </div>
                   <div className="text-right">
@@ -300,21 +336,6 @@ export default function CalendarPage() {
                       <p className="text-sm text-gray-600">{event.time}</p>
                     )}
                   </div>
-                </div>
-                {/* Edit/Delete Buttons */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                  <button
-                    onClick={() => handleEditEvent(event)}
-                    className="bg-blue-600 text-white p-1 rounded text-xs hover:bg-blue-700"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteEvent(event)}
-                    className="bg-red-600 text-white p-1 rounded text-xs hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
                 </div>
               </div>
             ))}
