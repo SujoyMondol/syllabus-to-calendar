@@ -11,17 +11,26 @@ export default function Home() {
 
     router.push('/submit');
   };
+
+  const handleFeatruresClick = () => {
+    router.push('/features');
+  }
+
+  const handleHowItWorksClick = () => {
+    router.push('/howItWorks');
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">SyllabusTo<span className="text-red-600">Calendar</span></h1>
         <div className="flex space-x-4">
-          <button className="px-4 py-2 rounded hover:bg-white hover:text-black transition-colors">Features</button>
-          <button className="px-4 py-2 rounded hover:bg-white hover:text-black transition-colors">How It Works</button>
-          <button className="px-4 py-2 rounded hover:bg-white hover:text-black transition-colors">Pricing</button>
+          <button className="px-4 py-2 rounded hover:bg-white hover:text-black transition-colors" onClick={handleFeatruresClick}>Features</button>
+          <button className="px-4 py-2 rounded hover:bg-white hover:text-black transition-colors" onClick={handleHowItWorksClick}>How It Works</button>
+          
         </div>
-        <button className="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+        <button className="bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors" onClick={handleConvertClick}>
           Get Started
         </button>
       </nav>
@@ -41,9 +50,7 @@ export default function Home() {
           className="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
             Convert Your Syllabus Now
           </button>
-          <button className="border border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-black transition-colors">
-            Watch Demo
-          </button>
+
         </div>
 
         <div className="mt-16 p-6 bg-white rounded-lg shadow-xl">
@@ -83,7 +90,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="bg-white py-24 text-black">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center mb-4">Why Choose SyllabusConverter?</h3>
+          <h3 className="text-3xl font-bold text-center mb-4">Why Choose SyllabusToCalendar?</h3>
           <p className="text-gray-600 text-center mb-16 max-w-2xl mx-auto">
             Our tool saves time and ensures you never miss important academic deadlines again.
           </p>
@@ -160,7 +167,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-3xl font-bold mb-6">Ready to Organize Your Semester?</h3>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">Join thousands of students who use SyllabusConverter to stay on top of their academic schedule.</p>
-          <button className="bg-red-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+          <button className="bg-red-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-red-700 transition-colors" onClick={handleConvertClick}>
             Get Started For Free
           </button>
         </div>
