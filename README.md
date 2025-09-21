@@ -143,13 +143,7 @@ For advanced text processing and date extraction, we have integrated OpenAI's AP
 
 This project is licensed under the MIT License 
 
-## 🆘 Support
 
-If you have any questions or need help with the application:
-
-1. Check the [FAQ section](/how-it-works) on the website
-2. Open an issue on GitHub
-3. Contact us at support@syllabustocalendar.com
 
 ## 🙏 Acknowledgments
 
