@@ -73,7 +73,8 @@ src/
 │   ├── pages/
 |   |   ├── api/
 |   |   |    ├──  convert.ts                # Convert PDF file to DOCX for better event extraction
-|   |   |    └──   process-syllabus.ts      # Process text using OpenAI API to extract events
+|   |   |    ├──  process-syllabus.ts       # Process text using OpenAI API to extract events
+|   |   |    └──  updateCalendarData.ts     # Updates calendar-data.json according to user edits
 │   │   ├── calendar.tsx                    # Calendar view page
 |   |   |── featrues.tsx                    # Features page
 |   |   |── howItWorks.tsx                  # How it works page
