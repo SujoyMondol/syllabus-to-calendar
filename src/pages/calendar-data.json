@@ -55,13 +55,6 @@
       "time": "20:00",
       "description": "Deadline for submitting final brief",
       "type": "assignment"
-    },
-    {
-      "title": "Oral Arguments",
-      "date": "2025-04-03",
-      "time": null,
-      "description": "Oral arguments for final appellate brief",
-      "type": "class"
     }
   ]
 }

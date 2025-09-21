@@ -11,7 +11,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useSearchParams } from "next/navigation";
 import { downloadICS } from "../utils/downloadICS";
 import { openGoogleCalendarImport } from "../utils/downloadGmail";
-
+import updateCalendarData from "@/pages/api/updateCalendarData";
 
 // Import your local JSON data
 import calendarData from "./calendar-data.json";
@@ -45,6 +45,42 @@ interface Course {
   events: Event[];
 }
 
+// ... existing imports ...
+
+// Function to update the calendar-data.json file
+const updateCalendarDataFile = async (data: any): Promise<boolean> => {
+  try {
+    const response = await fetch('/api/update-calendar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    // Check if the response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      // This is not a JSON response, likely an HTML error page
+      const text = await response.text();
+      throw new Error(`Server returned HTML instead of JSON. Status: ${response.status}. Response: ${text.substring(0, 100)}...`);
+    }
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to update calendar data');
+    }
+    
+    return result.success;
+  } catch (error) {
+    console.error('Error updating calendar data:', error);
+    throw error;
+  }
+};
+
+// ... rest of your calendar.tsx code ...
+
 export default function CalendarPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -53,6 +89,7 @@ export default function CalendarPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -92,80 +129,119 @@ export default function CalendarPage() {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveEvent = (updatedEvent: Event) => {
-    // Update the events state
-    const updatedEvents = events.map(ev => 
-      ev.title === editingEvent?.title && ev.date === editingEvent?.date 
-        ? { ...updatedEvent, start: new Date(`${updatedEvent.date}T${updatedEvent.time || "00:00"}`), end: new Date(`${updatedEvent.date}T${updatedEvent.time || "23:59"}`) }
-        : ev
-    );
-    
-    setEvents(updatedEvents);
-    
-    // Update the courses state
-    const updatedCourses = courses.map(course => ({
-      ...course,
-      events: course.events.map(ev => 
-        ev.title === editingEvent?.title && ev.date === editingEvent?.date 
-          ? updatedEvent 
-          : ev
-      )
-    }));
-    
-    setCourses(updatedCourses);
-
-    // Update the calendarData object (simulating persistence)
-    calendarData.events = calendarData.events.map(ev => 
-      ev.title === editingEvent?.title && ev.date === editingEvent?.date 
-        ? { ...updatedEvent}
-        : ev
-    );
-
-    // If adding a new event (no editingEvent match), append to calendarData.events
-    if (!calendarData.events.some(ev => ev.title === editingEvent?.title && ev.date === editingEvent?.date)) {
-      calendarData.events.push({ ...updatedEvent});
-    }
-    
-    setIsEditModalOpen(false);
-    setEditingEvent(null);
-  };
-
-  const handleDeleteEvent = (eventToDelete: Event) => {
-    setDeletingEvent(eventToDelete);
-    setIsDeleteModalOpen(true);
-    
-  };
-
-  const confirmDeleteEvent = () => {
-    if (deletingEvent) {
+  const handleSaveEvent = async (updatedEvent: Event) => {
+    setIsSaving(true);
+    try {
       // Update the events state
-      const updatedEvents = events.filter(ev => 
-        !(ev.title === deletingEvent.title && ev.date === deletingEvent.date)
+      const updatedEvents = events.map(ev => 
+        ev.title === editingEvent?.title && ev.date === editingEvent?.date 
+          ? { ...updatedEvent, start: new Date(`${updatedEvent.date}T${updatedEvent.time || "00:00"}`), end: new Date(`${updatedEvent.date}T${updatedEvent.time || "23:59"}`) }
+          : ev
       );
       
       setEvents(updatedEvents);
-
-      console.log('Updated Events after deletion:', updatedEvents);
       
       // Update the courses state
       const updatedCourses = courses.map(course => ({
         ...course,
-        events: course.events.filter(ev => 
-          !(ev.title === deletingEvent.title && ev.date === deletingEvent.date)
+        events: course.events.map(ev => 
+          ev.title === editingEvent?.title && ev.date === editingEvent?.date 
+            ? updatedEvent 
+            : ev
         )
       }));
       
       setCourses(updatedCourses);
 
-      // Update the calendarData object (simulating persistence)
-      calendarData.events = calendarData.events.filter(ev => 
-        !(ev.title === deletingEvent.title && ev.date === deletingEvent.date)
-      );
-
+      // Update the calendarData object
+      const updatedData = {
+        ...calendarData,
+        events: updatedCourses[0].events
+      };
       
+    const response = await fetch("/api/updateCalendarData", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(updatedData),
+});
+
+if (!response.ok) {
+  throw new Error("Failed to save changes to file");
+}
+
+const result = await response.json();
+if (!result.success) {
+  throw new Error("Failed to save changes to file");
+}
+      setIsEditModalOpen(false);
+      setEditingEvent(null);
+    } catch (error) {
+      console.error('Error saving event:', error);
+      alert(`Failed to save changes: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteEvent = (eventToDelete: Event) => {
+    setDeletingEvent(eventToDelete);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteEvent = async () => {
+    setIsSaving(true);
+    if (deletingEvent) {
+      try {
+        // Update the events state
+        const updatedEvents = events.filter(ev => 
+          !(ev.title === deletingEvent.title && ev.date === deletingEvent.date)
+        );
+        
+        setEvents(updatedEvents);
+        
+        // Update the courses state
+        const updatedCourses = courses.map(course => ({
+          ...course,
+          events: course.events.filter(ev => 
+            !(ev.title === deletingEvent.title && ev.date === deletingEvent.date)
+          )
+        }));
+        
+        setCourses(updatedCourses);
+
+        // Update the calendarData object
+        const updatedData = {
+          ...calendarData,
+          events: updatedCourses[0].events
+        };
+        
+const response = await fetch("/api/updateCalendarData", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(updatedData),
+});
+
+if (!response.ok) {
+  throw new Error("Failed to save changes to file");
+}
+
+const result = await response.json();
+if (!result.success) {
+  throw new Error("Failed to save changes to file");
+}
+        
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        alert(`Failed to delete event: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
     setIsDeleteModalOpen(false);
     setDeletingEvent(null);
+    setIsSaving(false);
   };
 
   const handleAddEvent = () => {
@@ -361,9 +437,11 @@ export default function CalendarPage() {
             <h3 className="text-lg font-bold mb-4 text-center">Export Calendar</h3>
             <div className="flex flex-wrap justify-center gap-4">
               <button className="flex flex-col items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors" onClick={() => { openGoogleCalendarImport(calendarData)}}>
-                <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 12h-10v10h10v-10zm10 0h-10v10h10v-10zm-10-12h-10v10h10v-10zm10 0h-10v10h10v-10z"/>
-                </svg>
+                <img
+                  src="/gmail-svgrepo-com.svg"
+                  alt="Google Calendar"
+                  className="w-8 h-8 mb-2"
+                />
                 <span>Google Calendar</span>
               </button>
 
@@ -382,12 +460,13 @@ export default function CalendarPage() {
       {isEditModalOpen && editingEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white text-black p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">Edit Event</h3>
+            <h3 className="text-xl font-bold mb-4">{editingEvent.title === "New Event" ? "Add New Event" : "Edit Event"}</h3>
             <EditEventForm
               event={editingEvent}
               onSave={handleSaveEvent}
               onCancel={() => setIsEditModalOpen(false)}
               eventTypes={calendarData.eventTypes}
+              isSaving={isSaving}
             />
           </div>
         </div>
@@ -407,15 +486,17 @@ export default function CalendarPage() {
                   setDeletingEvent(null);
                 }}
                 className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                disabled={isSaving}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={confirmDeleteEvent}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400"
+                disabled={isSaving}
               >
-                Delete
+                {isSaving ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>
@@ -435,7 +516,7 @@ export default function CalendarPage() {
 }
 
 // Edit Event Form Component
-function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; onSave: (event: Event) => void; onCancel: () => void; eventTypes: string[] }) {
+function EditEventForm({ event, onSave, onCancel, eventTypes, isSaving }: { event: Event; onSave: (event: Event) => void; onCancel: () => void; eventTypes: string[]; isSaving: boolean }) {
   const [formData, setFormData] = useState(event);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -457,6 +538,7 @@ function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; 
           onChange={(e) => handleChange('title', e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
           required
+          disabled={isSaving}
         />
       </div>
 
@@ -468,6 +550,7 @@ function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; 
           className="w-full p-2 border border-gray-300 rounded"
           rows={3}
           required
+          disabled={isSaving}
         />
       </div>
 
@@ -480,6 +563,7 @@ function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; 
             onChange={(e) => handleChange('date', e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
             required
+            disabled={isSaving}
           />
         </div>
 
@@ -490,6 +574,7 @@ function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; 
             value={formData.time || ''}
             onChange={(e) => handleChange('time', e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
+            disabled={isSaving}
           />
         </div>
       </div>
@@ -500,6 +585,7 @@ function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; 
           value={formData.type}
           onChange={(e) => handleChange('type', e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
+          disabled={isSaving}
         >
           {eventTypes.map(type => (
             <option key={type} value={type}>
@@ -514,14 +600,16 @@ function EditEventForm({ event, onSave, onCancel, eventTypes }: { event: Event; 
           type="button"
           onClick={onCancel}
           className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+          disabled={isSaving}
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400"
+          disabled={isSaving}
         >
-          Save Changes
+          {isSaving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
     </form>
